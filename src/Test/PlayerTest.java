@@ -1,121 +1,55 @@
-package cyberpunk;
+package Test;
+
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
-import cyberpunk.Weapons.*;
 
+import org.junit.Test;
 
-public class main 
+import cyberpunk.Player;
+import cyberpunk.Weapons.AssaultRifle;
+import cyberpunk.Weapons.HeavyMelee;
+import cyberpunk.Weapons.HeavyPistol;
+import cyberpunk.Weapons.LightMelee;
+import cyberpunk.Weapons.MediumMelee;
+import cyberpunk.Weapons.MediumPistol;
+import cyberpunk.Weapons.Pistol;
+import cyberpunk.Weapons.SMG;
+import cyberpunk.Weapons.Shotgun;
+import cyberpunk.Weapons.VeryHeavyPistol;
+import cyberpunk.Weapons.Weapon;
+
+public class PlayerTest
 {
 
-	public static void main(String[] args) 
-	{		
-		int cycles = 500000;
-		int wins = 0;
+	@Test
+	public void test()
+	{
+		ArrayList<Player> players = makePlayers();
+		ArrayList<Player> enemies = makeEnemies();
 		
-		ArrayList<Player> players;
-		ArrayList<Player> enemies;
+		Player player = players.get(2);
 		
-		for(int i = 1; i <= cycles; i++)
-		{
-			players = makePlayers();
-			enemies = makeEnemies();
-			while(getTeamHealth(players) > 0 && getTeamHealth(enemies) > 0)
-			{
-				takeTurn(players, enemies);
-				takeTurn(enemies, players);
-			}
-			if(getTeamHealth(players) > getTeamHealth(enemies))	wins++;
-			//System.out.println("Players: " + getTeamHealth(players));
-			//System.out.println("Enemies: " + getTeamHealth(enemies));
-			
-			percentage(cycles, i);
-		}
-		//System.out.println("Players: " + getTeamHealth(players));
-		//System.out.println("Enemies: " + getTeamHealth(enemies));
-		System.out.println("Wins: " + wins);
-		System.out.println((wins * 100.0 / cycles) + "%");
+		assertTrue(player.getTarget(enemies).getClass() == new Player().getClass());
+		assertTrue(Weapon.class.isAssignableFrom(player.pickWeapon().getClass()));
+		assertTrue(player.pickWeapon().getClass() == new Shotgun().getClass());
+		
+		int dist1 = player.getDistanceFromCenter();
+		player.movePlayer(enemies);
+		int dist2 = player.getDistanceFromCenter();
+		assertNotEquals(dist1, dist2);
+		
+		int temp = player.getHP();
+		player.takeRangedDamage(9);
+		assertEquals(player.getHP(), temp);
+		player.takeRangedDamage(15);
+		assertNotEquals(player.getHP(), temp);
+		
+		player = players.get(0);
+		player.takeMeleeDamage(10);
+		assertEquals(player.getHP(), 45- 7);
+	}
 
-	}
-	
-	public static void percentage(int cycles, int i)
-	{
-		if(cycles > 1000)
-		{
-			if(i % (cycles / 100) == 0)
-			{
-				System.out.println(i / (cycles / 100) + "%");
-			}
-		}
-	}
-	
-	public static int getTeamHealth(ArrayList<Player> team)
-	{
-		int health = 0;
-		for(int i = 0; i < team.size(); i++)
-		{
-			//if(team.get(i).getHP() <= 0)
-			{
-				//team.remove(i);
-			}
-			//else
-			{
-				health += team.get(i).getHP();
-			}
-		}
-		return health;
-	}
-	
-	public static void takeTurn(ArrayList<Player> team1, ArrayList<Player> team2)
-	{
-		for(int i = 0; i < team1.size(); i++)
-		{
-			if(team1.get(i).getHP() > 0)
-			{
-				team1.get(i).movePlayer(team2);
-				Player target = team1.get(i).getTarget(team2);
-				Weapon weapon = team1.get(i).pickWeapon();
-				
-				try
-				{
-					weapon.getClass();
-				}
-				catch(Exception e)
-				{
-					System.out.println("Error: "+ team1.get(i).getName());
-				}
-				
-				if(MeleeWeapon.class.isAssignableFrom(weapon.getClass()))
-				{
-					MeleeWeapon melee = (MeleeWeapon) weapon;
-					for(int j = 0; j < melee.getROF(); j++)
-					{
-						if(melee.rollToHit(target.getEvasion() + new Dice().rollD10()))
-						{
-							int dmg = melee.rollDamage();
-							target.takeMeleeDamage(dmg);
-							//System.out.println(team1.get(i).getName() + " attacks " + target.getName() + " for " + dmg + " melee dmg");
-						}
-					}
-				}
-				else if(RangedWeapon.class.isAssignableFrom(weapon.getClass()))
-				{
-					RangedWeapon gun = (RangedWeapon) weapon;
-					if(gun.checkMag() > 0)
-					{
-						for(int j = 0; j < gun.getROF(); j++)
-						{
-							if(gun.rollToHit(team1.get(i).getDistanceToTarget(), gun.getSkill()))
-							{
-								int dmg = gun.rollDamage();
-								target.takeRangedDamage(dmg);
-								//System.out.println(team1.get(i).getName() + " attacks " + target.getName() + " for " + dmg + " ranged dmg");
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	
 	public static ArrayList<Player> makePlayers()
 	{
 		//hp, bodySP, headSP, handgun, shoulder, autofire, melee, evasion, move, ArrayList<Weapon> weapons
@@ -155,9 +89,9 @@ public class main
 		Player Tripwire = new Player("Tripwire", 35, 11, 11, 12, 6, 6, 6, 12, 7, TripwireWeapons);
 		
 		ArrayList<Player> players = new ArrayList<>();
-		//players.add(Doc);
-		//players.add(Jonestown);
-		//players.add(Lantern);
+		players.add(Doc);
+		players.add(Jonestown);
+		players.add(Lantern);
 		players.add(Phibes);
 		players.add(Punished);
 		players.add(Ridge);
@@ -176,7 +110,6 @@ public class main
 		Player Legion2 = new Player("Legion2", 35, 7, 0, 11, 11, 11, 11, 11, 4, LegionnaireWeapons);
 		Player Legion3 = new Player("Legion3", 35, 7, 0, 11, 11, 11, 11, 11, 4, LegionnaireWeapons);
 		Player Legion4 = new Player("Legion4", 35, 7, 0, 11, 11, 11, 11, 11, 4, LegionnaireWeapons);
-		Player Legion5 = new Player("Legion5", 35, 7, 0, 11, 11, 11, 11, 11, 4, LegionnaireWeapons);
 		
 		ArrayList<Weapon> CobraWeapons = new ArrayList<>();
 		CobraWeapons.add(new HeavyMelee(10));
@@ -185,7 +118,6 @@ public class main
 		Player Cobra2 = new Player("Cobra2", 30, 4, 4, 10, 10, 10, 10, 10, 4, CobraWeapons);
 		Player Cobra3 = new Player("Cobra3", 30, 4, 4, 10, 10, 10, 10, 10, 4, CobraWeapons);
 		Player Cobra4 = new Player("Cobra4", 30, 4, 4, 10, 10, 10, 10, 10, 4, CobraWeapons);
-		Player Cobra5 = new Player("Cobra5", 30, 4, 4, 10, 10, 10, 10, 10, 4, CobraWeapons);
 		
 		ArrayList<Weapon> JoshuaWeapons = new ArrayList<>();
 		JoshuaWeapons.add(new HeavyMelee(12));
@@ -208,16 +140,13 @@ public class main
 		players.add(Legion2);
 		players.add(Legion3);
 		players.add(Legion4);
-		players.add(Legion5);
-		//players.add(Cobra1);
-		//players.add(Cobra2);
-		//players.add(Cobra3);
-		//players.add(Cobra4);
-		//players.add(Cobra5);
-		//players.add(Joshua);
+		players.add(Cobra1);
+		players.add(Cobra2);
+		players.add(Cobra3);
+		players.add(Cobra4);
+		players.add(Joshua);
 		//players.add(Adam);
 				
 		return players;
 	}
-
 }

@@ -1,6 +1,4 @@
-package cyberpunk.Weapons.forPlayer;
-
-import cyberpunk.Weapons.SMGbase;
+package cyberpunk.Weapons;
 
 public class HeavySMG extends SMGbase
 {

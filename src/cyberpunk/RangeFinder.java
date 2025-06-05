@@ -18,9 +18,9 @@ public class RangeFinder
 	
 	public int getRangeDC(int range)
 	{
-		int DC = 50;
-		if(range > 0 && range <= 6) DC = range0To6;
-		if(range > 6 && range <= 12) DC = range7To12;
+		int DC = 500;
+		if((range >= 0) && (range <= 6)) DC = range0To6;
+		if((range > 6) && (range <= 12)) DC = range7To12;
 		if(range > 12 && range <= 25) DC = range13To25;
 		if(range > 25 && range <= 50) DC = range26To50;
 		if(range > 50 && range <= 100) DC = range51To100;

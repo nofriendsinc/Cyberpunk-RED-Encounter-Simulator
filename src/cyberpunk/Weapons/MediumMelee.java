@@ -1,5 +1,4 @@
-package cyberpunk.Weapons.forPlayer;
-import cyberpunk.Weapons.MeleeWeapon;
+package cyberpunk.Weapons;
 
 public class MediumMelee extends MeleeWeapon
 {

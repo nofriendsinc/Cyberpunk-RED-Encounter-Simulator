@@ -1,9 +1,7 @@
-package cyberpunk.Weapons.forPlayer;
-
-import cyberpunk.Weapons.Pistol;
+package cyberpunk.Weapons;
 
 public class VeryHeavyPistol extends Pistol
-{
+{	
 	public VeryHeavyPistol(int skill)
 	{
 		this.damageDice = 4;
