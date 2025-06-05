@@ -18,6 +18,7 @@ public class RangeFinder
 	
 	public int getRangeDC(int range)
 	{
+		//Find index of DC in arrays for given range value
 		int DC = 500;
 		if((range >= 0) && (range <= 6)) DC = range0To6;
 		if((range > 6) && (range <= 12)) DC = range7To12;
@@ -33,6 +34,7 @@ public class RangeFinder
 	
 	public int getRangeDCVal(int range, int[] rangeDC)
 	{
+		//For given range and array of DCs, find actual DC value
 		int DC = new RangeFinder().getRangeDC(range);
 		
 		try

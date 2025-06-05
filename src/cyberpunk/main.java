@@ -14,6 +14,7 @@ public class main
 		ArrayList<Player> players;
 		ArrayList<Player> enemies;
 		
+		//Run simulations, each one until one team has 0 health
 		for(int i = 1; i <= cycles; i++)
 		{
 			players = makePlayers();
@@ -24,13 +25,9 @@ public class main
 				takeTurn(enemies, players);
 			}
 			if(getTeamHealth(players) > getTeamHealth(enemies))	wins++;
-			//System.out.println("Players: " + getTeamHealth(players));
-			//System.out.println("Enemies: " + getTeamHealth(enemies));
 			
 			percentage(cycles, i);
 		}
-		//System.out.println("Players: " + getTeamHealth(players));
-		//System.out.println("Enemies: " + getTeamHealth(enemies));
 		System.out.println("Wins: " + wins);
 		System.out.println((wins * 100.0 / cycles) + "%");
 
@@ -49,14 +46,15 @@ public class main
 	
 	public static int getTeamHealth(ArrayList<Player> team)
 	{
+		//Calculate total health of passed team ArrayList
 		int health = 0;
 		for(int i = 0; i < team.size(); i++)
 		{
-			//if(team.get(i).getHP() <= 0)
+			if(team.get(i).getHP() <= 0)
 			{
-				//team.remove(i);
+				team.remove(i);
 			}
-			//else
+			else
 			{
 				health += team.get(i).getHP();
 			}
@@ -70,19 +68,12 @@ public class main
 		{
 			if(team1.get(i).getHP() > 0)
 			{
+				//Move player, choose target, then pick weapon
 				team1.get(i).movePlayer(team2);
 				Player target = team1.get(i).getTarget(team2);
 				Weapon weapon = team1.get(i).pickWeapon();
 				
-				try
-				{
-					weapon.getClass();
-				}
-				catch(Exception e)
-				{
-					System.out.println("Error: "+ team1.get(i).getName());
-				}
-				
+				//If chosen weapon is melee, check to hit target and do melee damage if hit, for all ROF
 				if(MeleeWeapon.class.isAssignableFrom(weapon.getClass()))
 				{
 					MeleeWeapon melee = (MeleeWeapon) weapon;
@@ -96,6 +87,7 @@ public class main
 						}
 					}
 				}
+				//If chosen weapon is ranged, check to hit target and do normal damage if hit, for all ROF
 				else if(RangedWeapon.class.isAssignableFrom(weapon.getClass()))
 				{
 					RangedWeapon gun = (RangedWeapon) weapon;
@@ -118,7 +110,7 @@ public class main
 	
 	public static ArrayList<Player> makePlayers()
 	{
-		//hp, bodySP, headSP, handgun, shoulder, autofire, melee, evasion, move, ArrayList<Weapon> weapons
+		//Player constuctor variables: name, hp, bodySP, headSP, handgun, shoulder, autofire, melee, evasion, move, ArrayList<Weapon> weapons
 		ArrayList<Weapon> DocWeapons = new ArrayList<>();
 		DocWeapons.add(new MediumMelee(6));
 		DocWeapons.add(new MediumPistol(10));
@@ -168,7 +160,7 @@ public class main
 	
 	public static ArrayList<Player> makeEnemies()
 	{
-		//hp, bodySP, headSP, handgun, shoulder, autofire, melee, evasion, move, ArrayList<Weapon> weapons
+		//Player constuctor variables: name, hp, bodySP, headSP, handgun, shoulder, autofire, melee, evasion, move, ArrayList<Weapon> weapons
 		ArrayList<Weapon> LegionnaireWeapons = new ArrayList<>();
 		LegionnaireWeapons.add(new MediumMelee(11));
 		LegionnaireWeapons.add(new HeavyPistol(11));

@@ -56,7 +56,6 @@ public class Weapon
 
 	public int[] getRangeDC()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

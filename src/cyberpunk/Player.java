@@ -49,6 +49,7 @@ public class Player
 		int temp = 0;
 		Player tempTarget = enemy.get(rand.nextInt(enemy.size()));
 		
+		//Chose closest target
 		for(int i = 0; i < enemy.size(); i++)
 		{
 			temp = Math.abs(this.distanceFromCenter) + Math.abs(enemy.get(i).getDistanceFromCenter());
@@ -86,7 +87,6 @@ public class Player
 			for(int i = 0; i < this.weapons.size(); i++)
 			{
 				temp = weapons.get(i);
-				//System.out.println(MeleeWeapon.class.isAssignableFrom(temp.getClass()));
 				if(MeleeWeapon.class.isAssignableFrom(temp.getClass()))
 				{
 					return temp;
@@ -95,9 +95,13 @@ public class Player
 		}
 		for(int i = 0; i < weapons.size(); i++)
 		{
+			//Check ranged weapons for lowest DC to hit chosen target at range
 			if(RangedWeapon.class.isAssignableFrom(weapons.get(i).getClass()))
 			{
-				int t = new RangeFinder().getRangeDCVal(distanceToTarget, weapons.get(i).getRangeDC());	//TODO fix this shit!!!
+				//get rangeDC array from chosen weapon
+				int[] rangeDC = weapons.get(i).getRangeDC();
+				//find value of DC to hit from chosen weapon and range to chosen target
+				int t = new RangeFinder().getRangeDCVal(distanceToTarget, rangeDC);
 				if(t < tempDC) 
 				{
 					tempDC = t;
@@ -105,12 +109,14 @@ public class Player
 				}
 			}
 		}
-		//System.out.println(temp.getClass());
 		return temp;
 	}
 	
 	public void movePlayer(ArrayList<Player> enemy)
 	{
+		//TODO FIGURE OUT MOVEMENT LOGIC
+		
+		/*
 		//find average distance to all enemies
 		int sumDist = 0;
 		int sumEnemy = 0;
@@ -135,14 +141,14 @@ public class Player
 		int dc = 50;
 		int index = 0;
 		int distPref = 0;
-		/*for(int i = 0; i < temp.getRangeDC().length; i++)
+		for(int i = 0; i < temp.getRangeDC().length; i++)
 		{
 			if(temp.getRangeDC()[i] < dc)
 			{
 				dc = temp.getRangeDC()[i];
 				index = i;
 			}
-		}*/
+		}
 		
 		if(index == 0)	distPref = 3;
 		if(index == 1)	distPref = 10;
@@ -152,15 +158,17 @@ public class Player
 		if(index == 5)	distPref = 150;
 		if(index == 6)	distPref = 300;
 		if(index == 7)	distPref = 500;
+		*/
 		
 		//compare preferred dist to average to enemies
-		
-		//TODO FIGURE OUT MOVEMENT LOGIC
 		
 		//if(sumDist > distPref)	distanceFromCenter += this.move;
 		
 		//logic to find preferred distance to center
 		//check damage of each weapon/ammo count?
+		
+		
+		//Move a random distance to/from center
 		Random rand = new Random();
 		int direction = 1;
 		if(rand.nextInt(1) == 1) direction = -1;
@@ -170,6 +178,7 @@ public class Player
 	
 	public void takeRangedDamage(int dmg)
 	{
+		//Armor blocks damage by SP, and armor ablates if damage exceeds
 		if(dmg > this.bodyArmorSP)
 		{
 			dmg -= bodyArmorSP;
@@ -180,6 +189,7 @@ public class Player
 	
 	public void takeMeleeDamage(int dmg)
 	{
+		//Armor blocks damage by half of SP, and armor ablates if damage exceeds
 		if(dmg > this.bodyArmorSP / 2)
 		{
 			dmg -= bodyArmorSP / 2;
