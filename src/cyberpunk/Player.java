@@ -36,7 +36,8 @@ public class Player
 		this.evasion = evasion;
 		this.move = move;
 		this.weapons = weapons;
-		this.brain = new PlayerBrain();
+		this.brain = new PlayerBrain(move);
+		//brain.findPreferredWeapon(weapons);
 	}
 	
 	public Player()
@@ -46,7 +47,7 @@ public class Player
 
 	public Player getTarget(ArrayList<Player> enemy)
 	{
-		target = brain.getTargetPlayer(enemy);
+		target = brain.getClosestTargetPlayer(enemy);
 		return target;
 	}
 	
@@ -57,7 +58,8 @@ public class Player
 	
 	public void movePlayer(ArrayList<Player> enemy)
 	{
-		brain.movePlayer(enemy, this.move);
+		//brain.movePlayer(enemy, this.move, weapons);
+		brain.moveTo(0, 0);
 	}
 	
 	public void takeRangedDamage(int dmg)
@@ -82,17 +84,17 @@ public class Player
 		}
 	}
 	
-	public int getDistanceToTarget()
+	public float getDistanceToTarget()
 	{
-		return this.distanceToTarget;
+		return (float) brain.getDistance(target.getXPos(), target.getYPos());
 	}
 	
-	public int getXPos()
+	public float getXPos()
 	{
 		return brain.getXPos();
 	}
 	
-	public int getYPos()
+	public float getYPos()
 	{
 		return brain.getYPos();
 	}

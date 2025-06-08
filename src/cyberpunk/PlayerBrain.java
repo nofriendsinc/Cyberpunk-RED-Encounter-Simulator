@@ -13,13 +13,17 @@ public class PlayerBrain
 	//Randomly pick starting position between x = [-30,30) and y = [-30,30)
 	int xPos = rand.nextInt(60) - 30;
 	int yPos = rand.nextInt(60) - 30;
+	Weapon prefWeapon;
+	int prefDist;
+	Player target;
+	int move;
 	
-	public PlayerBrain()
+	public PlayerBrain(int move)
 	{
-		
+		this.move = move;
 	}
 	
-	public Player getTargetPlayer(ArrayList<Player> enemy)
+	public Player getClosestTargetPlayer(ArrayList<Player> enemy)
 	{
 		double tempMin = 100000;
 		double temp = 0;
@@ -36,7 +40,11 @@ public class PlayerBrain
 			}
 		}
 		
+		target = tempTarget;
+		
 		return tempTarget;
+		
+		//if target is out of melee and no melee weapon check for better weapons
 		
 		/*if(tempMin == 0)
 		{
@@ -51,23 +59,8 @@ public class PlayerBrain
 		}*/
 	}
 	
-	public void movePlayer(ArrayList<Player> enemy, int move)
+	public void findPreferredWeapon(ArrayList<Weapon> weapons)
 	{
-		//TODO FIGURE OUT MOVEMENT LOGIC
-		
-		/*
-		//find average distance to all enemies
-		int sumDist = 0;
-		int sumEnemy = 0;
-		for(int i = 0; i < enemy.size(); i++)
-		{
-			sumDist = Math.abs(this.distanceFromCenter) + Math.abs(enemy.get(i).getDistanceFromCenter());
-			sumEnemy = Math.abs(enemy.get(i).getDistanceFromCenter());
-		}
-		
-		//sumDist /= enemy.size();
-		//sumEnemy /= enemy.size();
-		
 		//find weapon with most damage
 		Weapon temp = null;
 		int dmg = 0;
@@ -79,7 +72,7 @@ public class PlayerBrain
 		//find best range for weapon
 		int dc = 50;
 		int index = 0;
-		int distPref = 0;
+		this.prefDist = 0;
 		for(int i = 0; i < temp.getRangeDC().length; i++)
 		{
 			if(temp.getRangeDC()[i] < dc)
@@ -89,24 +82,55 @@ public class PlayerBrain
 			}
 		}
 		
-		if(index == 0)	distPref = 3;
-		if(index == 1)	distPref = 10;
-		if(index == 2)	distPref = 20;
-		if(index == 3)	distPref = 40;
-		if(index == 4)	distPref = 75;
-		if(index == 5)	distPref = 150;
-		if(index == 6)	distPref = 300;
-		if(index == 7)	distPref = 500;
-		*/
+		//Sets preferred distance to targets to middle of each weapon range
+		if(index == 0)	this.prefDist = 3;
+		if(index == 1)	this.prefDist = 10;
+		if(index == 2)	this.prefDist = 20;
+		if(index == 3)	this.prefDist = 40;
+		if(index == 4)	this.prefDist = 75;
+		if(index == 5)	this.prefDist = 150;
+		if(index == 6)	this.prefDist = 300;
+		if(index == 7)	this.prefDist = 500;
+	}
+	
+	public void movePlayer(ArrayList<Player> enemy, int move, ArrayList<Weapon> weapons)
+	{
+		//TODO FIGURE OUT MOVEMENT LOGIC
+		//find average distance to all enemies
+		int sumDist = 0;
+		for(int i = 0; i < enemy.size(); i++)
+		{
+			sumDist += getDistance(enemy.get(i).getXPos(), enemy.get(i).getYPos());
+		}
+		sumDist /= enemy.size();
+		
 		
 		//compare preferred dist to average to enemies
 		
-		//if(sumDist > distPref)	distanceFromCenter += this.move;
+		if(sumDist > this.prefDist)	
+		{
+			//move away from nearest enemy
+			target = getClosestTargetPlayer(enemy);
+			double currentDist = getDistance(target.getXPos(), target.getYPos());
+			double xFactor = this.xPos - target.getXPos();
+			double yFactor = this.yPos - target.getYPos();
+			double adjDist = prefDist / currentDist;
+			moveTo((int) (xFactor * adjDist), (int) (yFactor * adjDist));
+		}
+		else if(sumDist < this.prefDist)	
+		{
+			//move towards nearest enemy
+			target = getClosestTargetPlayer(enemy);
+			double currentDist = getDistance(target.getXPos(), target.getYPos());
+			double xFactor = target.getXPos() - this.xPos;
+			double yFactor = target.getYPos() - this.yPos;
+			double adjDist = prefDist / currentDist;
+			moveTo((int) (xFactor * adjDist), (int) (yFactor * adjDist));
+		}
 		
-		//logic to find preferred distance to center
 		//check damage of each weapon/ammo count?
 		
-		
+		/*
 		//Move a random distance to/from center
 		Random rand = new Random();
 		int direction = 1;
@@ -115,6 +139,28 @@ public class PlayerBrain
 		int temp = rand.nextInt(distToMove);
 		xPos += (temp * direction);
 		yPos += ((distToMove - temp) * direction);
+		*/
+	}
+	
+	public void moveTo(int x, int y)
+	{
+		double distance = getDistance(x, y);
+		if(distance <= move)
+		{
+			this.xPos = x;
+			this.yPos = y;
+		}
+		else	
+		{
+			double xFactor = x - this.xPos;
+			double yFactor = y - this.yPos;
+			
+			double adjDist = (float) move / distance;
+			
+			
+			this.xPos += xFactor * adjDist;
+			this.yPos += yFactor * adjDist;
+		}
 	}
 	
 	public Weapon pickWeapon(ArrayList<Weapon> weapons, Player target)
@@ -155,19 +201,19 @@ public class PlayerBrain
 		return temp;
 	}
 	
-	public double getDistance(int x, int y)
+	public float getDistance(float x, float y)
 	{
 		double totalX = this.xPos + x;
 		double totalY = this.yPos + y;
-		return Math.sqrt((totalX * totalX) + (totalY * totalY));
+		return (float) Math.sqrt((totalX * totalX) + (totalY * totalY));
 	}
 	
-	public int getXPos()
+	public float getXPos()
 	{
 		return xPos;
 	}
 
-	public int getYPos()
+	public float getYPos()
 	{
 		return yPos;
 	}

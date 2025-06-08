@@ -10,7 +10,7 @@ public class main
 	{		
 		int cycles = 50000;
 		int wins = 0;
-		
+				
 		ArrayList<Player> players;
 		ArrayList<Player> enemies;
 		
@@ -30,7 +30,6 @@ public class main
 		}
 		System.out.println("Wins: " + wins);
 		System.out.println((wins * 100.0 / cycles) + "%");
-
 	}
 	
 	public static void percentage(int cycles, int i)
@@ -95,7 +94,7 @@ public class main
 					{
 						for(int j = 0; j < gun.getROF(); j++)
 						{
-							if(gun.rollToHit(team1.get(i).getDistanceToTarget(), gun.getSkill()))
+							if(gun.rollToHit((int)team1.get(i).getDistanceToTarget(), gun.getSkill()))
 							{
 								int dmg = gun.rollDamage();
 								target.takeRangedDamage(dmg);
@@ -110,7 +109,7 @@ public class main
 	
 	public static ArrayList<Player> makePlayers()
 	{
-		//Player constuctor variables: name, hp, bodySP, headSP, handgun, shoulder, autofire, melee, evasion, move, ArrayList<Weapon> weapons
+		//Player constructor variables: name, hp, bodySP, headSP, handgun, shoulder, autofire, melee, evasion, move, ArrayList<Weapon> weapons
 		ArrayList<Weapon> DocWeapons = new ArrayList<>();
 		DocWeapons.add(new MediumMelee(6));
 		DocWeapons.add(new MediumPistol(10));
@@ -160,7 +159,7 @@ public class main
 	
 	public static ArrayList<Player> makeEnemies()
 	{
-		//Player constuctor variables: name, hp, bodySP, headSP, handgun, shoulder, autofire, melee, evasion, move, ArrayList<Weapon> weapons
+		//Player constructor variables: name, hp, bodySP, headSP, handgun, shoulder, autofire, melee, evasion, move, ArrayList<Weapon> weapons
 		ArrayList<Weapon> LegionnaireWeapons = new ArrayList<>();
 		LegionnaireWeapons.add(new MediumMelee(11));
 		LegionnaireWeapons.add(new HeavyPistol(11));
