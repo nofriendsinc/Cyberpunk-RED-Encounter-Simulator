@@ -6,9 +6,9 @@ import cyberpunk.Weapons.*;
 public class main 
 {
 
-	public static void main(String[] args) 
+	public static void main(String[] args)
 	{		
-		int cycles = 500000;
+		int cycles = 50000;
 		int wins = 0;
 		
 		ArrayList<Player> players;

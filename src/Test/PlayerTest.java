@@ -34,9 +34,9 @@ public class PlayerTest
 		assertTrue(Weapon.class.isAssignableFrom(player.pickWeapon().getClass()));
 		assertTrue(player.pickWeapon().getClass() == new Shotgun().getClass());
 		
-		int dist1 = player.getDistanceFromCenter();
+		int dist1 = player.getXPos();
 		player.movePlayer(enemies);
-		int dist2 = player.getDistanceFromCenter();
+		int dist2 = player.getXPos();
 		assertNotEquals(dist1, dist2);
 		
 		int temp = player.getHP();
