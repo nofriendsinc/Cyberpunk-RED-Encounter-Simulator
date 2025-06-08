@@ -66,19 +66,30 @@ public class PlayerBrain
 		int dmg = 0;
 		for(int i = 0; i < weapons.size(); i++)
 		{
-			if(weapons.get(i).getDamageDice() > dmg)	temp = weapons.get(i);
+			if(weapons.get(i).getDamageDice() > dmg)
+			{
+				temp = weapons.get(i);
+				dmg = temp.getDamageDice();
+			}
 		}
 		
 		//find best range for weapon
 		int dc = 50;
 		int index = 0;
 		this.prefDist = 0;
-		for(int i = 0; i < temp.getRangeDC().length; i++)
+		if(temp.getRangeDC() == null)
 		{
-			if(temp.getRangeDC()[i] < dc)
+			
+		}
+		else
+		{
+			for(int i = 0; i < temp.getRangeDC().length; i++)
 			{
-				dc = temp.getRangeDC()[i];
-				index = i;
+				if(temp.getRangeDC()[i] < dc)
+				{
+					dc = temp.getRangeDC()[i];
+					index = i;
+				}
 			}
 		}
 		

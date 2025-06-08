@@ -37,7 +37,7 @@ public class Player
 		this.move = move;
 		this.weapons = weapons;
 		this.brain = new PlayerBrain(move);
-		//brain.findPreferredWeapon(weapons);
+		brain.findPreferredWeapon(weapons);
 	}
 	
 	public Player()
