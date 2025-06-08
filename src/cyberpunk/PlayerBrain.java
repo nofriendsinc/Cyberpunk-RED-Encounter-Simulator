@@ -138,6 +138,10 @@ public class PlayerBrain
 			double adjDist = prefDist / currentDist;
 			moveTo((int) (xFactor * adjDist), (int) (yFactor * adjDist));
 		}
+		else
+		{
+			moveTo(0,0);
+		}
 		
 		//check damage of each weapon/ammo count?
 		
