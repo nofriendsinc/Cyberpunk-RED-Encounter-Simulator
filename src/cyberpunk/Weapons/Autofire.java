@@ -22,6 +22,8 @@ public class Autofire
 
 	public int rollToHit(int range, int skill, int inMag)
 	{
+		//if weapon has 10 bullets in mag, try to beat DC at range
+		//returns amount DC was beaten by
 		if(inMag >= 10)
 		{
 			int DC = 0;
@@ -52,6 +54,7 @@ public class Autofire
 	
 	public int rollDamage(int beatDC)
 	{
+		//roll damage and multiplies by amount player beat the DC by, up to max for chosen weapon
 		int temp = dice.rollD6() + dice.rollD6();
 		if(beatDC > this.maxMultiple) beatDC = this.maxMultiple;
 		temp *= beatDC;

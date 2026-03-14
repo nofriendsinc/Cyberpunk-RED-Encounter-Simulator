@@ -1,5 +1,4 @@
-package cyberpunk.Weapons.forPlayer;
-import cyberpunk.Weapons.SMGbase;
+package cyberpunk.Weapons;
 
 public class SMG extends SMGbase
 {
@@ -9,10 +8,5 @@ public class SMG extends SMGbase
 		inMag = 30;
 		this.maxMag = 30;
 		this.skill = skill;
-	}
-
-	public SMG()
-	{
-		// TODO Auto-generated constructor stub
 	}
 }
