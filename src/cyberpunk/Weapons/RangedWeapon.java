@@ -14,17 +14,19 @@ public class RangedWeapon extends Weapon
 	private static final int range401To800 = 7;
 	
 	
-	public int[] rangeDC;
-	public int damageDice;
-	public int ROF;
-	public Dice dice = new Dice();
-	public int skill;
-	public static int inMag;
-	public int maxMag;
+	protected int[] rangeDC = {50,50,50,50,50,50,50,50};
+	protected static int inMag;
+	protected int maxMag;
 	
 	public RangedWeapon()
 	{
 		
+	}
+	
+	public RangedWeapon(int inmag, int maxmag)
+	{
+		inMag = inmag;
+		maxMag = maxmag;
 	}
 	
 	public RangedWeapon(int skill)
@@ -32,9 +34,14 @@ public class RangedWeapon extends Weapon
 		this.skill = skill;
 	}
 	
-	public static void removeInMag(int shots)
+	public static boolean removeInMag(int shots)
 	{
-		inMag -= shots;
+		if(shots <= inMag)
+		{
+			inMag -= shots;
+			return true;
+		}
+		else return false;
 	}
 	
 	public boolean rollToHit(int range, int skill)
@@ -45,10 +52,9 @@ public class RangedWeapon extends Weapon
 			int roll = dice.rollD10();
 			
 			DC = new RangeFinder().getRangeDC(range);
-			
 			try
 			{
-				int i = rangeDC[DC];
+				int i = this.rangeDC[DC];
 			}
 			catch(Exception e)
 			{
@@ -77,10 +83,11 @@ public class RangedWeapon extends Weapon
 	
 	public int reload(int ammo)
 	{
-		if(ammo >= this.maxMag)
+		int diff = maxMag - inMag;
+		if(ammo >= diff)
 		{
-			inMag = this.maxMag;
-			return ammo - (maxMag - inMag);
+			inMag = maxMag;
+			return (ammo - diff);
 		}
 		else
 		{

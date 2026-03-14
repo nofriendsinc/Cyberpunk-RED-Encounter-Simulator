@@ -1,20 +1,12 @@
 package cyberpunk;
-import cyberpunk.Weapons.MeleeWeapon;
-import cyberpunk.Weapons.Pistol;
-import cyberpunk.Weapons.Weapon;
-import cyberpunk.Weapons.forPlayer.*;
+import cyberpunk.Weapons.*;
+
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Player
 {
-	private static final int mediumPistol = 0;
-	private static final int heavyPistol = 1;
-	private static final int veryHeavyPistol = 2;
-	private static final int SMG = 3;
-	private static final int heavySMG = 4;
-	private static final int shotgun = 5;
-	private static final int assaultRifle = 6;
-	
+	private String name;
 	private int HP;
 	private int bodyArmorSP;
 	private int headArmorSP;
@@ -22,18 +14,18 @@ public class Player
 	private int shoulderArms;
 	private int autofire;
 	private int melee;
+	private int evasion;
 	private int move;
 	private int ammo = 120;
-	private Weapon[] weapons;
-	
-	private int distanceFromCenter = 15;
+	private ArrayList<Weapon> weapons;
+	private PlayerBrain brain;
+	Random rand = new Random();
 	private int distanceToTarget;
+	Player target;
 	
-
-	
-
-	public Player(int hp, int bodySP, int headSP, int handgun, int shoulder, int autofire, int melee, int move, Weapon[] weapons)
+	public Player(String name, int hp, int bodySP, int headSP, int handgun, int shoulder, int autofire, int melee, int evasion, int move, ArrayList<Weapon> weapons)
 	{
+		this.name = name;
 		this.HP = hp;
 		this.bodyArmorSP = bodySP;
 		this.headArmorSP = headSP;
@@ -41,92 +33,129 @@ public class Player
 		this.shoulderArms = shoulder;
 		this.autofire = autofire;
 		this.melee = melee;
+		this.evasion = evasion;
 		this.move = move;
-		//this.ammo = ammo;
 		this.weapons = weapons;
-		
-		for(int i = 0; i < this.weapons.length; i++)
-		{
-			if(this.weapons[i].getClass() == new Pistol().getClass()) this.weapons[i].setSkill(this.handgun);
-			if(this.weapons[i].getClass() == new SMG().getClass()) this.weapons[i].setSkill(this.handgun);
-			if(this.weapons[i].getClass() == new Shotgun().getClass()) this.weapons[i].setSkill(this.shoulderArms);
-			if(this.weapons[i].getClass() == new AssaultRifle().getClass()) this.weapons[i].setSkill(this.shoulderArms);
-		}
+		this.brain = new PlayerBrain(move);
+		brain.findPreferredWeapon(weapons);
 	}
 	
-	public Player getTarget(Player[] enemy)
+	public Player()
 	{
-		int tempMin = 100000;
-		int temp = 0;
-		Player tempTarget = null;
-		
-		for(int i = 0; i < enemy.length; i++)
-		{
-			temp = Math.abs(this.distanceFromCenter) + Math.abs(enemy[i].getDistanceFromCenter());
-			if(temp < tempMin) 
-			{
-				temp = tempMin;
-				tempTarget = enemy[i];
-			}
-		}
-		
-		if(tempMin == 0)
-		{
-			this.distanceToTarget = temp;
-			return tempTarget;
-		}
-		else
-		{
-			Random rand = new Random();
-			this.distanceToTarget = temp;
-			return enemy[rand.nextInt(enemy.length)];
-		}
+		// TODO Auto-generated constructor stub
+	}
+
+	public Player getTarget(ArrayList<Player> enemy)
+	{
+		target = brain.getClosestTargetPlayer(enemy);
+		return target;
 	}
 	
 	public Weapon pickWeapon()
 	{
-		//choose a weapon at random
-		//if distance to target is 0 picks melee
-		Weapon temp = null;
-		int tempDC = 50;
-		
-		if(this.distanceToTarget == 0)
-		{
-			for(int i = 0; i < this.weapons.length; i++)
-			{
-				temp = weapons[i];
-				if(temp.getClass() == new MeleeWeapon().getClass())
-				{
-					return temp;
-				}
-			}
-		}
-		for(int i = 0; i < weapons.length; i++)
-		{
-			int t = new RangeFinder().getRangeDCVal(distanceToTarget, weapons[i].getRangeDC());	//TODO fix this shit!!!
-			if(t < tempDC) 
-			{
-				tempDC = t;
-				temp = weapons[i];
-			}
-		}
-		return temp;
+		return brain.pickWeapon(weapons, target);
 	}
 	
-	public void movePlayer()
+	public void movePlayer(ArrayList<Player> enemy)
 	{
-		//logic to find preferred distance to center
-		//check damage of each weapon/ammo count?
-		Random rand = new Random();
-		int direction = 1;
-		if(rand.nextInt(1) == 1) direction = -1;
-		this.distanceFromCenter += (rand.nextInt(this.move) + 1) * direction;
-		
+		//brain.movePlayer(enemy, this.move, weapons);
+		brain.moveTo(0, 0);
 	}
 	
-	public int getDistanceFromCenter()
+	public void takeRangedDamage(int dmg)
 	{
-		return this.distanceFromCenter;
+		//Armor blocks damage by SP, and armor ablates if damage exceeds
+		if(dmg > this.bodyArmorSP)
+		{
+			dmg -= bodyArmorSP;
+			bodyArmorSP--;
+			HP -= dmg;
+		}
+	}
+	
+	public void takeMeleeDamage(int dmg)
+	{
+		//Armor blocks damage by half of SP, and armor ablates if damage exceeds
+		if(dmg > this.bodyArmorSP / 2)
+		{
+			dmg -= bodyArmorSP / 2;
+			bodyArmorSP--;
+			HP -= dmg;
+		}
+	}
+	
+	public float getDistanceToTarget()
+	{
+		return (float) brain.getDistance(target.getXPos(), target.getYPos());
+	}
+	
+	public float getXPos()
+	{
+		return brain.getXPos();
+	}
+	
+	public float getYPos()
+	{
+		return brain.getYPos();
 	}
 
+	public int getAmmo()
+	{
+		return ammo;
+	}
+
+	public void setAmmo(int ammo)
+	{
+		this.ammo = ammo;
+	}
+
+	public int getHP()
+	{
+		return HP;
+	}
+
+	public int getBodyArmorSP()
+	{
+		return bodyArmorSP;
+	}
+
+	public int getHeadArmorSP()
+	{
+		return headArmorSP;
+	}
+
+	public int getHandgun()
+	{
+		return handgun;
+	}
+
+	public int getShoulderArms()
+	{
+		return shoulderArms;
+	}
+
+	public int getAutofire()
+	{
+		return autofire;
+	}
+
+	public int getMelee()
+	{
+		return melee;
+	}
+
+	public int getEvasion()
+	{
+		return evasion;
+	}
+
+	public int getMove()
+	{
+		return move;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
 }

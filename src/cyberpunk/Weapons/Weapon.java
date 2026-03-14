@@ -4,11 +4,10 @@ import cyberpunk.Dice;
 
 public class Weapon
 {
-	protected int[] rangeDC;
-	protected int damageDice;
-	protected int ROF;
+	protected int damageDice = 0;
+	protected int ROF = 0;
 	protected Dice dice = new Dice();
-	protected int skill;
+	protected int skill = 0;
 	
 	public Weapon()
 	{
@@ -29,14 +28,34 @@ public class Weapon
 	{
 		return this.ROF;
 	}
-
-	public int[] getRangeDC()
-	{
-		return this.rangeDC;
-	}
 	
 	public void setSkill(int skill)
 	{
 		this.skill = skill;
+	}
+
+	public int getDamageDice()
+	{
+		return damageDice;
+	}
+
+	public void setDamageDice(int damageDice)
+	{
+		this.damageDice = damageDice;
+	}
+
+	public int getSkill()
+	{
+		return skill;
+	}
+
+	public void setROF(int rOF)
+	{
+		ROF = rOF;
+	}
+
+	public int[] getRangeDC()
+	{
+		return null;
 	}
 }

@@ -2,6 +2,8 @@ package cyberpunk.Weapons;
 
 public class MeleeWeapon extends Weapon
 {
+	protected int[] rangeDC = {0};
+	
 	public MeleeWeapon()
 	{
 		
@@ -12,10 +14,10 @@ public class MeleeWeapon extends Weapon
 		this.skill = skill;
 	}
 	
-	public boolean rollToHit(int skill, int evasion)
+	public boolean rollToHit(int evasion)
 	{
 		int roll = dice.rollD10();
-		if(skill + roll > evasion)
+		if(this.skill + roll > evasion)
 		{
 			return true;
 		}
